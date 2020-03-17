@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Track Me</string>
+    <string name="prefLoginState">loginstate</string>
+</resources>
