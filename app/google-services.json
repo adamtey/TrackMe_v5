@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "655596009270",
+    "firebase_url": "https://track-me-f408d.firebaseio.com",
+    "project_id": "track-me-f408d",
+    "storage_bucket": "track-me-f408d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655596009270:android:bed41582f33f7f4be06597",
+        "android_client_info": {
+          "package_name": "com.example.trackme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "655596009270-esmb6v15l8qt7cu5nh8h3uemh335c2mt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.trackme",
+            "certificate_hash": "bd7f5be8fc57095eedc4b3ec63203a2ded91edc3"
+          }
+        },
+        {
+          "client_id": "655596009270-g773dpkfuom8c00du9r5l36fbuct85s9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQrYgtgwkvnm6McdTrpbZap__Mxy-GsIE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "655596009270-g773dpkfuom8c00du9r5l36fbuct85s9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

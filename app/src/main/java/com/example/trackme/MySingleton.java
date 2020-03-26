@@ -1,46 +1,21 @@
 package com.example.trackme;
 
-import android.content.Context;
+import android.app.Application;
+import android.content.Intent;
 
-import com.android.volley.Cache;
-import com.android.volley.Network;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.BasicNetwork;
-import com.android.volley.toolbox.DiskBasedCache;
-import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.Volley;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-public class MySingleton {
+public class MySingleton extends Application {
+    public void onCreate(){
+        super.onCreate();
 
-    private  static MySingleton mInstance;
-    private RequestQueue mRequestQueue;
-    private Context mCtx;
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-    public MySingleton(Context mCtx){
-        this.mCtx = mCtx;
-        mRequestQueue = getmRequestQueue();
-    }
-
-    public RequestQueue getmRequestQueue(){
-        if (mRequestQueue == null){
-            Cache cache = new DiskBasedCache(mCtx.getCacheDir(), 1024*1024);
-            Network network = new BasicNetwork(new HurlStack());
-            mRequestQueue = new RequestQueue(cache, network);
-            mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
+        if(firebaseUser != null){
+            startActivity(new Intent(MySingleton.this, HomeActivity.class));
         }
-
-        return mRequestQueue;
     }
 
-    public  static synchronized MySingleton getmInstance(Context context){
-        if (mInstance == null){
-            mInstance = new MySingleton(context);
-        }
-        return  mInstance;
-    }
-
-    public <T> void addToRequestQueue(Request<T> request){
-        mRequestQueue.add(request);
-    }
 }
