@@ -7,12 +7,15 @@ import androidx.fragment.app.FragmentActivity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -27,7 +30,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -41,6 +46,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private EditText editTextLatitude;
     private EditText editTextLongitude;
+
+    double latitude;
+    double longitude;
 
 
     @Override
@@ -62,21 +70,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
-                     String databaseLatitudeString = dataSnapshot.child("latitude").getValue().toString().substring(1,dataSnapshot.child("latitude").getValue().toString().length()-1);
-                     String databaseLongitudeString = dataSnapshot.child("longitude").getValue().toString().substring(1,dataSnapshot.child("latitude").getValue().toString().length()-1);
+                    /*  String databaseLatitudeString = dataSnapshot.child("latitude").getValue().toString().substring(1, dataSnapshot.child("latitude").getValue().toString().length()-1);
+                     String databaseLongitudeString = dataSnapshot.child("longitude").getValue().toString().substring(1, dataSnapshot.child("longitude").getValue().toString().length()-1);
 
-                     String[] stringLat = databaseLatitudeString.split(", ");
+                    String[] stringLat = databaseLatitudeString.split(", ");
                      Arrays.sort(stringLat);
                      String latitude = stringLat[stringLat.length-1].split("=")[1];
 
+
+
                     String[] stringLong = databaseLongitudeString.split(", ");
                     Arrays.sort(stringLong);
-                    String longitude = stringLong[stringLong.length-1].split("=")[1];
+                     String longitude = stringLong[stringLong.length-1].split("=")[1];  */
 
-                    LatLng latLng = new LatLng(Double.parseDouble(latitude) , Double.parseDouble(longitude));
+                    String databaseLatitudeString = dataSnapshot.child("latitude").getValue().toString().substring(1, dataSnapshot.child("latitude").getValue().toString().length()-1);
+                    String databaseLongitudeString = dataSnapshot.child("longitude").getValue().toString().substring(1, dataSnapshot.child("longitude").getValue().toString().length()-1);
 
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(latitude + " , " + longitude));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+//
                 }
                  catch (Exception e){
                     e.printStackTrace();
@@ -106,20 +117,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+
+
+         //Add a marker in Sydney and move the camera
+//       LatLng sydney = new LatLng(-34, 151);
+//       mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+               //Guys code
+                /*
+                try {
+                    editTextLatitude.setText(Double.toString(location.getLatitude()));
+                    editTextLongitude.setText(Double.toString(location.getLongitude()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
+
+                //new guy
+                 latitude = location.getLatitude();
+                 longitude = location.getLongitude();
+
                 try {
                     editTextLatitude.setText(Double.toString(location.getLatitude()));
                     editTextLongitude.setText(Double.toString(location.getLongitude()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+
+                LatLng latLng = new LatLng(latitude , longitude);
+                Geocoder geocoder = new Geocoder(getApplicationContext());
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(latitude , longitude , 1);
+                    String str = addressList.get(0).getLocality()+" ,";
+                    str += addressList.get(0).getCountryName();
+                    mMap.addMarker(new MarkerOptions().position(latLng).title(str));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng , 10.2f));
+
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
+
 
             }
 
@@ -152,8 +193,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         try {
-            locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, MIN_Time, MIN_DIST, locationListener);
-            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, MIN_Time, MIN_DIST, locationListener);
+            //if for new gyt    ....checking for network provider enabled
+            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+                locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, MIN_Time, MIN_DIST, locationListener);
+            }
+            else if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)) {
+                locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, MIN_Time, MIN_DIST, locationListener);
+            }
+            //old guy
+           // locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, MIN_Time, MIN_DIST, locationListener);
+            // locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, MIN_Time, MIN_DIST, locationListener);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -165,6 +214,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         databaseReference.child("latitude").push().setValue(editTextLatitude.getText().toString());
         databaseReference.child("longitude").push().setValue(editTextLongitude.getText().toString());
+        Toast.makeText(MapsActivity.this, "Location sent" , Toast.LENGTH_LONG).show();
     }
 
 }

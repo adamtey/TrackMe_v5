@@ -14,8 +14,15 @@ public class MySingleton extends Application {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
         if(firebaseUser != null){
-            startActivity(new Intent(MySingleton.this, HomeActivity.class));
 
+            Intent intent = new Intent(MySingleton.this , MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+           // startActivity(new Intent(MySingleton.this, HomeActivity.class));
+
+//            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//            startActivity(intent);
         }
     }
 
