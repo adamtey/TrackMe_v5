@@ -15,6 +15,7 @@ public class MySingleton extends Application {
 
         if(firebaseUser != null){
             startActivity(new Intent(MySingleton.this, HomeActivity.class));
+
         }
     }
 
