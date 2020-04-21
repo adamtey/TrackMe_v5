@@ -47,6 +47,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EditText editTextLatitude;
     private EditText editTextLongitude;
 
+    //Global variable for Logitude and latitude
     double latitude;
     double longitude;
 
@@ -65,29 +66,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         editTextLatitude = findViewById(R.id.editText);
         editTextLongitude = findViewById(R.id.editText2);
 
+        //Database Information
         databaseReference = FirebaseDatabase.getInstance().getReference("Location");
+        //listener for database
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
-                    /*  String databaseLatitudeString = dataSnapshot.child("latitude").getValue().toString().substring(1, dataSnapshot.child("latitude").getValue().toString().length()-1);
-                     String databaseLongitudeString = dataSnapshot.child("longitude").getValue().toString().substring(1, dataSnapshot.child("longitude").getValue().toString().length()-1);
 
-                    String[] stringLat = databaseLatitudeString.split(", ");
-                     Arrays.sort(stringLat);
-                     String latitude = stringLat[stringLat.length-1].split("=")[1];
-
-
-
-                    String[] stringLong = databaseLongitudeString.split(", ");
-                    Arrays.sort(stringLong);
-                     String longitude = stringLong[stringLong.length-1].split("=")[1];  */
 
                     String databaseLatitudeString = dataSnapshot.child("latitude").getValue().toString().substring(1, dataSnapshot.child("latitude").getValue().toString().length()-1);
                     String databaseLongitudeString = dataSnapshot.child("longitude").getValue().toString().substring(1, dataSnapshot.child("longitude").getValue().toString().length()-1);
 
-
-//
                 }
                  catch (Exception e){
                     e.printStackTrace();
@@ -116,9 +106,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-
-
          //Add a marker in Sydney and move the camera
 //       LatLng sydney = new LatLng(-34, 151);
 //       mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
@@ -127,16 +114,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-               //Guys code
-                /*
-                try {
-                    editTextLatitude.setText(Double.toString(location.getLatitude()));
-                    editTextLongitude.setText(Double.toString(location.getLongitude()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
-
-                //new guy
+               //Getting various latitude and longitude
                  latitude = location.getLatitude();
                  longitude = location.getLongitude();
 
@@ -149,6 +127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 LatLng latLng = new LatLng(latitude , longitude);
+                //instantiating the geocoder
                 Geocoder geocoder = new Geocoder(getApplicationContext());
                 try {
                     List<Address> addressList = geocoder.getFromLocation(latitude , longitude , 1);
@@ -193,23 +172,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         try {
-            //if for new gyt    ....checking for network provider enabled
+            //checking for network provider to see if is enabled
             if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
                 locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, MIN_Time, MIN_DIST, locationListener);
             }
             else if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)) {
                 locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, MIN_Time, MIN_DIST, locationListener);
             }
-            //old guy
-           // locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, MIN_Time, MIN_DIST, locationListener);
-            // locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, MIN_Time, MIN_DIST, locationListener);
+
         }
         catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    //same as the send option
+    //To send into database
     public void updateButtonOnclick(View view){
 
         databaseReference.child("latitude").push().setValue(editTextLatitude.getText().toString());
